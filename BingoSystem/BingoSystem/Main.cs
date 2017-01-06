@@ -42,10 +42,10 @@ namespace BingoSystem
                     ShowRandomNum(100);
                     lotteryNumber.Refresh();
                 }
-                for (int i = 0; i < 20; i++) //あとの2秒は遅い画面変化
+                for (int i = 0; i < 5; i++) //あとの2秒は遅い画面変化
                 {
                     await Task.Run(() => PlaySound("button71.mp3"));
-                    ShowRandomNum(300);
+                    ShowRandomNum(400);
                     lotteryNumber.Refresh();
                 }
 
