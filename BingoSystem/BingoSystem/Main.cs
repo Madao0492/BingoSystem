@@ -3,11 +3,17 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Media;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using WMPLib;
 
 namespace BingoSystem
 {
+    /* 音素材入手先 */
+    /* http://www.kurage-kosho.info/ */
+
     public partial class Main : Form
     {
         List<int> lNumber = new List<int>(); //抽選数字が挿入されるリスト
@@ -23,18 +29,22 @@ namespace BingoSystem
             MakeAndRandomizeNumber(); //ビンゴの数字生成＆並び替え
         }
 
-        private void lotteryButton_Click(object sender, EventArgs e)
+        private async void lotteryButton_Click(object sender, EventArgs e)
         {
+            lotteryButton.Enabled = false;
+
             if (lotteryIndex < 75) //抽選範囲内
             {
                 lotteryNumber.ForeColor = Color.Black;
                 for (int i = 0; i < 30; i++) //最初の3秒は速い画面変化
                 {
+                    await Task.Run(() => PlaySound("button71.mp3"));
                     ShowRandomNum(100);
                     lotteryNumber.Refresh();
                 }
                 for (int i = 0; i < 20; i++) //あとの2秒は遅い画面変化
                 {
+                    await Task.Run(() => PlaySound("button71.mp3"));
                     ShowRandomNum(300);
                     lotteryNumber.Refresh();
                 }
@@ -42,7 +52,11 @@ namespace BingoSystem
                 lotteryNumber.ForeColor = Color.Red;
                 lotteryNumber.Text = lNumber[lotteryIndex].ToString();
 
+                PlaySound("one35.mp3");
+
                 InsertLotteryNumToSelectedNumber(lotteryIndex);
+
+                lotteryButton.Focus();
 
                 lotteryIndex++;
             }
@@ -51,6 +65,8 @@ namespace BingoSystem
             {
                 MessageBox.Show("抽選はすべて終了しました", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+
+            lotteryButton.Enabled = true;
         }
 
         private void MakeAndRandomizeNumber()
@@ -95,6 +111,14 @@ namespace BingoSystem
             {
                 selectedNumber.AppendText(" ");
             }
+        }
+
+        private void PlaySound(string fileName)
+        {
+            WindowsMediaPlayer mp = new WMPLib.WindowsMediaPlayer(); //音楽再生用変数
+            mp.URL = fileName;
+            mp.settings.volume = 100;
+            mp.controls.play();
         }
     }
 }
