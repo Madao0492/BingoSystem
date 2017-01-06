@@ -44,6 +44,7 @@
             this.selectedNumber.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.selectedNumber.Size = new System.Drawing.Size(635, 459);
             this.selectedNumber.TabIndex = 0;
+            this.selectedNumber.TabStop = false;
             // 
             // lotteryNumber
             // 
@@ -54,6 +55,7 @@
             this.lotteryNumber.ReadOnly = true;
             this.lotteryNumber.Size = new System.Drawing.Size(166, 140);
             this.lotteryNumber.TabIndex = 1;
+            this.lotteryNumber.TabStop = false;
             this.lotteryNumber.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // lotteryButton
@@ -62,12 +64,12 @@
             this.lotteryButton.Location = new System.Drawing.Point(654, 359);
             this.lotteryButton.Name = "lotteryButton";
             this.lotteryButton.Size = new System.Drawing.Size(166, 113);
-            this.lotteryButton.TabIndex = 2;
+            this.lotteryButton.TabIndex = 0;
             this.lotteryButton.Text = "抽　選";
             this.lotteryButton.UseVisualStyleBackColor = true;
             this.lotteryButton.Click += new System.EventHandler(this.lotteryButton_Click);
             // 
-            // Form1
+            // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -75,7 +77,7 @@
             this.Controls.Add(this.lotteryButton);
             this.Controls.Add(this.lotteryNumber);
             this.Controls.Add(this.selectedNumber);
-            this.Name = "Form1";
+            this.Name = "Main";
             this.Text = "MainView - BingoSystem";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);

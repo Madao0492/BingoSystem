@@ -28,9 +28,14 @@ namespace BingoSystem
             if (lotteryIndex < 75) //抽選範囲内
             {
                 lotteryNumber.ForeColor = Color.Black;
-                for (int i = 0; i < 50; i++) //5秒で抽選結果が出てくる
+                for (int i = 0; i < 30; i++) //最初の3秒は速い画面変化
                 {
-                    ShowRandomNum();
+                    ShowRandomNum(100);
+                    lotteryNumber.Refresh();
+                }
+                for (int i = 0; i < 20; i++) //あとの2秒は遅い画面変化
+                {
+                    ShowRandomNum(300);
                     lotteryNumber.Refresh();
                 }
 
@@ -58,13 +63,13 @@ namespace BingoSystem
             lNumber = lNumber.OrderBy(i => Guid.NewGuid()).ToList(); //リストの中身をかき混ぜる
         }
 
-        private void ShowRandomNum()
+        private void ShowRandomNum(int interval)
         {
             Random rnd = new Random();
             int tmpNumber = rnd.Next(74) + 1; //0～74を1～75に変化
 
             lotteryNumber.Text = tmpNumber.ToString();
-            Thread.Sleep(100);
+            Thread.Sleep(interval);
         }
 
         private void InsertLotteryNumToSelectedNumber(int index)
