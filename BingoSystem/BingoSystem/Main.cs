@@ -27,9 +27,12 @@ namespace BingoSystem
         private void Form1_Load(object sender, EventArgs e)
         {
             MakeAndRandomizeNumber(); //ビンゴの数字生成＆並び替え
+            selectedNumber.Anchor = (AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right);
+            lotteryNumber.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
+            lotteryButton.Anchor = (AnchorStyles.Bottom | AnchorStyles.Right);
         }
 
-        private async void lotteryButton_Click(object sender, EventArgs e)
+        private void lotteryButton_Click(object sender, EventArgs e)
         {
             lotteryButton.Enabled = false;
 
@@ -38,13 +41,13 @@ namespace BingoSystem
                 lotteryNumber.ForeColor = Color.Black;
                 for (int i = 0; i < 30; i++) //最初の3秒は速い画面変化
                 {
-                    await Task.Run(() => PlaySound("button71.mp3"));
+                    //await Task.Run(() => PlaySound("button71.mp3"));
                     ShowRandomNum(100);
                     lotteryNumber.Refresh();
                 }
                 for (int i = 0; i < 5; i++) //あとの2秒は遅い画面変化
                 {
-                    await Task.Run(() => PlaySound("button71.mp3"));
+                    //await Task.Run(() => PlaySound("button71.mp3"));
                     ShowRandomNum(400);
                     lotteryNumber.Refresh();
                 }
@@ -52,7 +55,7 @@ namespace BingoSystem
                 lotteryNumber.ForeColor = Color.Red;
                 lotteryNumber.Text = lNumber[lotteryIndex].ToString();
 
-                PlaySound("one35.mp3");
+                //PlaySound("one35.mp3");
 
                 InsertLotteryNumToSelectedNumber(lotteryIndex);
 
