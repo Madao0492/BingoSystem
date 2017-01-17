@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Media;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -17,37 +17,46 @@ namespace BingoSystem
     public partial class Main : Form
     {
         List<int> lNumber = new List<int>(); //抽選数字が挿入されるリスト
-        int lotteryIndex = 0; //今何番目の数字なのかのインデックス
+        int lotteryIndex = -1; //今何番目の数字なのかのインデックス
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr SendMessage(HandleRef hWnd, int msg, IntPtr wParam, IntPtr lParam);
+        private const int WM_SETREDRAW = 0x000B;
 
         public Main()
         {
             InitializeComponent();
         }
 
+        #region Formイベント
         private void Form1_Load(object sender, EventArgs e)
         {
             MakeAndRandomizeNumber(); //ビンゴの数字生成＆並び替え
             selectedNumber.Anchor = (AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right);
             lotteryNumber.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
             lotteryButton.Anchor = (AnchorStyles.Bottom | AnchorStyles.Right);
+            selectedNumber.LanguageOption = RichTextBoxLanguageOptions.UIFonts;
+            InsertSelectedNumber();
+            FitNumberToLotteryNum();
         }
 
-        private void lotteryButton_Click(object sender, EventArgs e)
+        private async void lotteryButton_Click(object sender, EventArgs e)
         {
             lotteryButton.Enabled = false;
+            lotteryIndex++;
 
             if (lotteryIndex < 75) //抽選範囲内
             {
                 lotteryNumber.ForeColor = Color.Black;
                 for (int i = 0; i < 30; i++) //最初の3秒は速い画面変化
                 {
-                    //await Task.Run(() => PlaySound("button71.mp3"));
+                    await Task.Run(() => PlaySound("button71.mp3"));
                     ShowRandomNum(100);
                     lotteryNumber.Refresh();
                 }
                 for (int i = 0; i < 5; i++) //あとの2秒は遅い画面変化
                 {
-                    //await Task.Run(() => PlaySound("button71.mp3"));
+                    await Task.Run(() => PlaySound("button71.mp3"));
                     ShowRandomNum(400);
                     lotteryNumber.Refresh();
                 }
@@ -55,13 +64,11 @@ namespace BingoSystem
                 lotteryNumber.ForeColor = Color.Red;
                 lotteryNumber.Text = lNumber[lotteryIndex].ToString();
 
-                //PlaySound("one35.mp3");
+                await Task.Run(() => PlaySound("one35.mp3"));
 
-                InsertLotteryNumToSelectedNumber(lotteryIndex);
-
+                RefreshSelectedNumber(lotteryIndex);
                 lotteryButton.Focus();
 
-                lotteryIndex++;
             }
 
             if(lotteryIndex >= 75)
@@ -72,6 +79,13 @@ namespace BingoSystem
             lotteryButton.Enabled = true;
         }
 
+        private void Main_SizeChanged(object sender, EventArgs e)
+        {
+            FitNumberToLotteryNum();
+        }
+        #endregion
+
+        #region ビンゴ番号生成（リスト・ランダム）
         private void MakeAndRandomizeNumber()
         {
             for (int i = 1; i <= 75; i++) //ビンゴは1～75までで抽選する
@@ -90,38 +104,138 @@ namespace BingoSystem
             lotteryNumber.Text = tmpNumber.ToString();
             Thread.Sleep(interval);
         }
+        #endregion
 
-        private void InsertLotteryNumToSelectedNumber(int index)
+        #region 抽選済み番号表示
+        private void InsertSelectedNumber()
         {
-            string tmpNum;
+            selectedNumber.Text = "";
+            string tmpNum = "";
 
-            if(lNumber[index] < 10)
+            BeginControlUpdate(selectedNumber);
+
+            for(int i = 1; i <= 75; i++)
             {
-                tmpNum = " " + lNumber[index];
+                if (i < 10)
+                {
+                    tmpNum = "0" + i;
+                }
+                else
+                {
+                    tmpNum = i.ToString();
+                }
+
+                selectedNumber.AppendText(tmpNum);
+
+                if (i % 10 == 0) //数字10個ごとに改行
+                {
+                    selectedNumber.AppendText(Environment.NewLine);
+                }
+                else //改行しない場合は文字列後ろにスペース挿入
+                {
+                    selectedNumber.AppendText(" ");
+                }
+            }
+
+            EndControlUpdate(selectedNumber);
+        }
+
+        private void RefreshSelectedNumber(int index)
+        {
+
+            if (index < 0)
+            {
+                return;
             }
             else
             {
-                tmpNum = lNumber[index].ToString();
-            }
+                //現在の選択状態を覚えておく
+                int currentSelectionStart = selectedNumber.SelectionStart;
+                int currentSelectionLength = selectedNumber.SelectionLength;
 
-            selectedNumber.AppendText(tmpNum);
+                string selectedNum = "";
 
-            if(index % 6 == 5) //数字6個ごとに改行
-            {
-                selectedNumber.AppendText(Environment.NewLine);
-            }
-            else //改行しない場合は文字列後ろにスペース挿入
-            {
-                selectedNumber.AppendText(" ");
+                for (int i = 0; i <= index; i++)
+                {
+                    if (lNumber[i] < 10)
+                    {
+                        selectedNum = "0" + lNumber[i];
+                    }
+                    else
+                    {
+                        selectedNum = lNumber[i].ToString();
+                    }
+                    selectedNumber.Find(selectedNum, 0, RichTextBoxFinds.None);
+                    selectedNumber.SelectionColor = Color.Red;
+                }
+
+                //選択状態を元に戻す
+                selectedNumber.Select(currentSelectionStart, currentSelectionLength);
             }
         }
+        #endregion
 
+        #region フォントサイズの更新
+        private void FitNumberToLotteryNum()
+        {
+            Graphics g = selectedNumber.CreateGraphics();
+
+            Font realFont = new Font(selectedNumber.Font.FontFamily, 100);
+
+            SizeF size = g.MeasureString(selectedNumber.Text, realFont);
+            while (size.Width >= selectedNumber.Width || size.Height >= selectedNumber.Height)
+            {
+                if (realFont.Size <= 1)
+                    break;
+
+                realFont = new Font(realFont.FontFamily, realFont.Size - 1);
+                size = g.MeasureString(selectedNumber.Text, realFont);
+            }
+
+            selectedNumber.Font = realFont;
+
+            RefreshSelectedNumber(lotteryIndex);
+            
+        }
+        #endregion
+
+        #region コントロールの更新抑制
+        /// <summary>
+        /// コントロールの再描画を停止させる
+        /// </summary>
+        /// <param name="control">対象のコントロール</param>
+        public static void BeginControlUpdate(Control control)
+        {
+            SendMessage(new HandleRef(control, control.Handle),
+                WM_SETREDRAW, IntPtr.Zero, IntPtr.Zero);
+        }
+
+        /// <summary>
+        /// コントロールの再描画を再開させる
+        /// </summary>
+        /// <param name="control">対象のコントロール</param>
+        public static void EndControlUpdate(Control control)
+        {
+            SendMessage(new HandleRef(control, control.Handle),
+                WM_SETREDRAW, new IntPtr(1), IntPtr.Zero);
+            control.Invalidate();
+        }
+        #endregion
+
+        #region 音再生
         private void PlaySound(string fileName)
         {
-            WindowsMediaPlayer mp = new WMPLib.WindowsMediaPlayer(); //音楽再生用変数
-            mp.URL = fileName;
-            mp.settings.volume = 100;
-            mp.controls.play();
+            try
+            {
+                WindowsMediaPlayer mp = new WindowsMediaPlayer();
+                mp.URL = fileName;
+                mp.settings.volume = 100;
+                mp.controls.play();
+            }
+            catch (Exception)
+            {
+            }
         }
+        #endregion
     }
 }

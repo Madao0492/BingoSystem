@@ -28,29 +28,16 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.selectedNumber = new System.Windows.Forms.TextBox();
             this.lotteryNumber = new System.Windows.Forms.TextBox();
             this.lotteryButton = new System.Windows.Forms.Button();
+            this.selectedNumber = new System.Windows.Forms.RichTextBox();
             this.SuspendLayout();
-            // 
-            // selectedNumber
-            // 
-            this.selectedNumber.BackColor = System.Drawing.Color.White;
-            this.selectedNumber.Font = new System.Drawing.Font("ＭＳ ゴシック", 48F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.selectedNumber.Location = new System.Drawing.Point(13, 13);
-            this.selectedNumber.Multiline = true;
-            this.selectedNumber.Name = "selectedNumber";
-            this.selectedNumber.ReadOnly = true;
-            this.selectedNumber.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.selectedNumber.Size = new System.Drawing.Size(635, 459);
-            this.selectedNumber.TabIndex = 0;
-            this.selectedNumber.TabStop = false;
             // 
             // lotteryNumber
             // 
             this.lotteryNumber.BackColor = System.Drawing.Color.White;
             this.lotteryNumber.Font = new System.Drawing.Font("ＭＳ Ｐゴシック", 99.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lotteryNumber.Location = new System.Drawing.Point(654, 12);
+            this.lotteryNumber.Location = new System.Drawing.Point(806, 12);
             this.lotteryNumber.Name = "lotteryNumber";
             this.lotteryNumber.ReadOnly = true;
             this.lotteryNumber.Size = new System.Drawing.Size(166, 140);
@@ -61,7 +48,7 @@
             // lotteryButton
             // 
             this.lotteryButton.Font = new System.Drawing.Font("ＭＳ Ｐゴシック", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.lotteryButton.Location = new System.Drawing.Point(654, 359);
+            this.lotteryButton.Location = new System.Drawing.Point(806, 320);
             this.lotteryButton.Name = "lotteryButton";
             this.lotteryButton.Size = new System.Drawing.Size(166, 113);
             this.lotteryButton.TabIndex = 0;
@@ -69,27 +56,40 @@
             this.lotteryButton.UseVisualStyleBackColor = true;
             this.lotteryButton.Click += new System.EventHandler(this.lotteryButton_Click);
             // 
+            // selectedNumber
+            // 
+            this.selectedNumber.BackColor = System.Drawing.Color.White;
+            this.selectedNumber.Font = new System.Drawing.Font("ＭＳ ゴシック", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
+            this.selectedNumber.Location = new System.Drawing.Point(13, 13);
+            this.selectedNumber.Name = "selectedNumber";
+            this.selectedNumber.ReadOnly = true;
+            this.selectedNumber.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
+            this.selectedNumber.Size = new System.Drawing.Size(787, 420);
+            this.selectedNumber.TabIndex = 0;
+            this.selectedNumber.TabStop = false;
+            this.selectedNumber.Text = "";
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(826, 484);
+            this.ClientSize = new System.Drawing.Size(984, 445);
+            this.Controls.Add(this.selectedNumber);
             this.Controls.Add(this.lotteryButton);
             this.Controls.Add(this.lotteryNumber);
-            this.Controls.Add(this.selectedNumber);
             this.Name = "Main";
             this.Text = "MainView - BingoSystem";
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.SizeChanged += new System.EventHandler(this.Main_SizeChanged);
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.TextBox selectedNumber;
         private System.Windows.Forms.TextBox lotteryNumber;
         private System.Windows.Forms.Button lotteryButton;
+        private System.Windows.Forms.RichTextBox selectedNumber;
     }
 }
 
