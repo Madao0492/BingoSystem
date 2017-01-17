@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -45,6 +47,8 @@ namespace BingoSystem
             lotteryButton.Enabled = false;
             lotteryIndex++;
 
+            continueButton.Enabled = false;
+
             if (lotteryIndex < 75) //抽選範囲内
             {
                 lotteryNumber.ForeColor = Color.Black;
@@ -67,6 +71,7 @@ namespace BingoSystem
                 await Task.Run(() => PlaySound("one35.mp3"));
 
                 RefreshSelectedNumber(lotteryIndex);
+                SaveLottery();
                 lotteryButton.Focus();
 
             }
@@ -77,6 +82,27 @@ namespace BingoSystem
             }
 
             lotteryButton.Enabled = true;
+        }
+
+        private void continueButton_Click(object sender, EventArgs e)
+        {
+            string logFileName = "bingo.log";
+
+            if (File.Exists(logFileName))
+            {
+                if (!RestoreLottery(logFileName))
+                {
+                    MessageBox.Show("前回終了時の状態を復元しました", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("ログファイルが不正です", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("ログファイルが見つかりません", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void Main_SizeChanged(object sender, EventArgs e)
@@ -171,6 +197,7 @@ namespace BingoSystem
 
                 //選択状態を元に戻す
                 selectedNumber.Select(currentSelectionStart, currentSelectionLength);
+
             }
         }
         #endregion
@@ -235,6 +262,118 @@ namespace BingoSystem
             catch (Exception)
             {
             }
+        }
+        #endregion
+
+        #region ビンゴ設定の復元
+        private bool RestoreLottery(string str)
+        {
+            string logFileName = str;
+            bool isError = false;
+
+            lNumber.Clear();
+            try
+            {
+                lNumber = GetLotterySequence(logFileName);
+                lotteryIndex = GetLotteryIndex(logFileName); //本当はJSONのほうが効率的だが…
+                RefreshSelectedNumber(lotteryIndex);
+            }
+            catch (Exception)
+            {
+                isError = true;
+                MakeAndRandomizeNumber();
+                lotteryIndex = -1;
+            }
+
+            return isError;
+        }
+
+        private List<int> GetLotterySequence(string str)
+        {
+            StreamReader sr = new StreamReader(str, Encoding.GetEncoding("shift_jis"));
+            int line = 1;
+
+            string[] lNumber_tmp = new string[75];
+            string str_tmp;
+
+            List<int> lNumber = new List<int>();
+
+            while (sr.Peek() > -1)
+            {
+                str_tmp = sr.ReadLine();
+                if(line == 3)
+                {
+                    lNumber_tmp = str_tmp.Split(',');
+                    break;
+                }
+                line++;
+            }
+            sr.Close();
+
+            for(int i = 0; i < lNumber_tmp.Length; i++)
+            {
+                lNumber.Add(int.Parse(lNumber_tmp[i]));
+            }
+
+            if(lNumber.Count != 75)
+            {
+                throw new FormatException();
+            }
+
+            return lNumber;
+        }
+
+        private int GetLotteryIndex(string str)
+        {
+            StreamReader sr = new StreamReader(str, Encoding.GetEncoding("shift_jis"));
+            int line = 1;
+
+            string str_tmp;
+
+            int lotteryIndex = -1;
+
+            while (sr.Peek() > -1)
+            {
+                str_tmp = sr.ReadLine();
+                if (line == 1)
+                {
+                    lotteryIndex = int.Parse(str_tmp.Remove(0,15));
+                    break;
+                }
+                line++;
+            }
+            sr.Close();
+
+            if(lotteryIndex < -1)
+            {
+                throw new FormatException();
+            }
+
+            return lotteryIndex;
+        }
+        #endregion
+
+        #region ビンゴ設定の保存
+        private void SaveLottery()
+        {
+            StreamWriter sw = new StreamWriter("bingo.log", false, Encoding.GetEncoding("shift_jis"));
+
+            string lNumber_tmp = "";
+
+            sw.WriteLine("lotteryIndex = " + lotteryIndex);
+            sw.WriteLine("lNumber = {");
+
+            for(int i = 0;i < lNumber.Count; i++)
+            {
+                lNumber_tmp += lNumber[i] + ",";
+            }
+
+            lNumber_tmp = lNumber_tmp.Remove(lNumber_tmp.Length - 1, 1); //行末,を除去
+
+            sw.WriteLine(lNumber_tmp);
+            sw.WriteLine("}");
+
+            sw.Close();
         }
         #endregion
     }

@@ -31,6 +31,7 @@
             this.lotteryNumber = new System.Windows.Forms.TextBox();
             this.lotteryButton = new System.Windows.Forms.Button();
             this.selectedNumber = new System.Windows.Forms.RichTextBox();
+            this.continueButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // lotteryNumber
@@ -69,11 +70,22 @@
             this.selectedNumber.TabStop = false;
             this.selectedNumber.Text = "";
             // 
+            // continueButton
+            // 
+            this.continueButton.Location = new System.Drawing.Point(806, 291);
+            this.continueButton.Name = "continueButton";
+            this.continueButton.Size = new System.Drawing.Size(166, 23);
+            this.continueButton.TabIndex = 2;
+            this.continueButton.Text = "前回の続きから";
+            this.continueButton.UseVisualStyleBackColor = true;
+            this.continueButton.Click += new System.EventHandler(this.continueButton_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(984, 445);
+            this.Controls.Add(this.continueButton);
             this.Controls.Add(this.selectedNumber);
             this.Controls.Add(this.lotteryButton);
             this.Controls.Add(this.lotteryNumber);
@@ -90,6 +102,7 @@
         private System.Windows.Forms.TextBox lotteryNumber;
         private System.Windows.Forms.Button lotteryButton;
         private System.Windows.Forms.RichTextBox selectedNumber;
+        private System.Windows.Forms.Button continueButton;
     }
 }
 
