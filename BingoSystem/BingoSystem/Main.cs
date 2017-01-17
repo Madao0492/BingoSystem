@@ -20,6 +20,7 @@ namespace BingoSystem
     {
         List<int> lNumber = new List<int>(); //抽選数字が挿入されるリスト
         int lotteryIndex = -1; //今何番目の数字なのかのインデックス
+        bool isSoundPlay = true;
 
         [DllImport("user32.dll")]
         public static extern IntPtr SendMessage(HandleRef hWnd, int msg, IntPtr wParam, IntPtr lParam);
@@ -38,6 +39,7 @@ namespace BingoSystem
             lotteryNumber.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
             lotteryButton.Anchor = (AnchorStyles.Bottom | AnchorStyles.Right);
             continueButton.Anchor = (AnchorStyles.Bottom | AnchorStyles.Right);
+            soundCheckBox.Anchor = (AnchorStyles.Bottom | AnchorStyles.Right);
             selectedNumber.LanguageOption = RichTextBoxLanguageOptions.UIFonts;
             InsertSelectedNumber();
             FitNumberToLotteryNum();
@@ -55,13 +57,15 @@ namespace BingoSystem
                 lotteryNumber.ForeColor = Color.Black;
                 for (int i = 0; i < 30; i++) //最初の3秒は速い画面変化
                 {
-                    await Task.Run(() => PlaySound("button71.mp3"));
+                    if(isSoundPlay)
+                        await Task.Run(() => PlaySound("button71.mp3"));
                     ShowRandomNum(100);
                     lotteryNumber.Refresh();
                 }
                 for (int i = 0; i < 5; i++) //あとの2秒は遅い画面変化
                 {
-                    await Task.Run(() => PlaySound("button71.mp3"));
+                    if (isSoundPlay)
+                        await Task.Run(() => PlaySound("button71.mp3"));
                     ShowRandomNum(400);
                     lotteryNumber.Refresh();
                 }
@@ -69,7 +73,8 @@ namespace BingoSystem
                 lotteryNumber.ForeColor = Color.Red;
                 lotteryNumber.Text = lNumber[lotteryIndex].ToString();
 
-                await Task.Run(() => PlaySound("one35.mp3"));
+                if (isSoundPlay)
+                    await Task.Run(() => PlaySound("one35.mp3"));
 
                 RefreshSelectedNumber(lotteryIndex);
                 SaveLottery();
@@ -109,6 +114,11 @@ namespace BingoSystem
         private void Main_SizeChanged(object sender, EventArgs e)
         {
             FitNumberToLotteryNum();
+        }
+
+        private void soundCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            isSoundPlay = soundCheckBox.Checked;
         }
         #endregion
 
@@ -377,5 +387,6 @@ namespace BingoSystem
             sw.Close();
         }
         #endregion
+
     }
 }

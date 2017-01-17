@@ -32,6 +32,7 @@
             this.lotteryButton = new System.Windows.Forms.Button();
             this.selectedNumber = new System.Windows.Forms.RichTextBox();
             this.continueButton = new System.Windows.Forms.Button();
+            this.soundCheckBox = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // lotteryNumber
@@ -80,11 +81,25 @@
             this.continueButton.UseVisualStyleBackColor = true;
             this.continueButton.Click += new System.EventHandler(this.continueButton_Click);
             // 
+            // soundCheckBox
+            // 
+            this.soundCheckBox.AutoSize = true;
+            this.soundCheckBox.Checked = true;
+            this.soundCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.soundCheckBox.Location = new System.Drawing.Point(912, 269);
+            this.soundCheckBox.Name = "soundCheckBox";
+            this.soundCheckBox.Size = new System.Drawing.Size(60, 16);
+            this.soundCheckBox.TabIndex = 3;
+            this.soundCheckBox.Text = "効果音";
+            this.soundCheckBox.UseVisualStyleBackColor = true;
+            this.soundCheckBox.CheckedChanged += new System.EventHandler(this.soundCheckBox_CheckedChanged);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(984, 445);
+            this.Controls.Add(this.soundCheckBox);
             this.Controls.Add(this.continueButton);
             this.Controls.Add(this.selectedNumber);
             this.Controls.Add(this.lotteryButton);
@@ -103,6 +118,7 @@
         private System.Windows.Forms.Button lotteryButton;
         private System.Windows.Forms.RichTextBox selectedNumber;
         private System.Windows.Forms.Button continueButton;
+        private System.Windows.Forms.CheckBox soundCheckBox;
     }
 }
 
