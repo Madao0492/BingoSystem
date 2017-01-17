@@ -37,6 +37,7 @@ namespace BingoSystem
             selectedNumber.Anchor = (AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right);
             lotteryNumber.Anchor = (AnchorStyles.Top | AnchorStyles.Right);
             lotteryButton.Anchor = (AnchorStyles.Bottom | AnchorStyles.Right);
+            continueButton.Anchor = (AnchorStyles.Bottom | AnchorStyles.Right);
             selectedNumber.LanguageOption = RichTextBoxLanguageOptions.UIFonts;
             InsertSelectedNumber();
             FitNumberToLotteryNum();
